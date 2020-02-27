@@ -1,0 +1,171 @@
+Description: Python 3.9: fix collections import
+ As collections has moved to collections.abc, this produces a warning which
+ may lead to unit testing errors: this is the case when building Rally.
+ .
+ This patch attempts to import from collections.abc, and if it fails, falls
+ back to collections. This should be harmless.
+ .
+ Note that this patch is probably useless with future version, as hopefully,
+ upstream will fix it (I didn't check). However, I didn't dare upgrading the
+ package to the major upstream release 3.x.
+Author: Thomas Goirand <zigo@debian.org>
+Bug-Debian: https://bugs.debian.org/949018
+Forwarded: no
+Last-Update: 2020-02-27
+
+--- jinja2-2.10.1.orig/jinja2/filters.py
++++ jinja2-2.10.1/jinja2/filters.py
+@@ -14,7 +14,12 @@ import random
+ import warnings
+ 
+ from itertools import groupby, chain
+-from collections import namedtuple
++
++try:
++    from collections.abc import namedtuple
++except:
++    from collections import namedtuple
++
+ from jinja2.utils import Markup, escape, pformat, urlize, soft_unicode, \
+      unicode_urlencode, htmlsafe_json_dumps
+ from jinja2.runtime import Undefined
+--- jinja2-2.10.1.orig/jinja2/lexer.py
++++ jinja2-2.10.1/jinja2/lexer.py
+@@ -15,7 +15,12 @@
+     :license: BSD, see LICENSE for more details.
+ """
+ import re
+-from collections import deque
++
++try:
++    from collections.abc import deque
++except:
++    from collections import deque
++
+ from operator import itemgetter
+ 
+ from jinja2._compat import implements_iterator, intern, iteritems, text_type
+--- jinja2-2.10.1.orig/jinja2/nodes.py
++++ jinja2-2.10.1/jinja2/nodes.py
+@@ -15,7 +15,11 @@
+ import types
+ import operator
+ 
+-from collections import deque
++try:
++    from collections.abc import deque
++except ImportError:
++    from collections import deque
++
+ from jinja2.utils import Markup
+ from jinja2._compat import izip, with_metaclass, text_type, PY2
+ 
+--- jinja2-2.10.1.orig/jinja2/runtime.py
++++ jinja2-2.10.1/jinja2/runtime.py
+@@ -315,10 +315,14 @@ class Context(with_metaclass(ContextMeta
+ 
+ # register the context as mapping if possible
+ try:
+-    from collections import Mapping
++    from collections.abc import Mapping
+     Mapping.register(Context)
+ except ImportError:
+-    pass
++    try:
++        from collections import Mapping
++        Mapping.register(Context)
++    except ImportError:
++        pass
+ 
+ 
+ class BlockReference(object):
+--- jinja2-2.10.1.orig/jinja2/sandbox.py
++++ jinja2-2.10.1/jinja2/sandbox.py
+@@ -14,7 +14,12 @@
+ """
+ import types
+ import operator
+-from collections import Mapping
++
++try:
++    from collections import Mapping
++except:
++    from collections.abc import Mapping
++
+ from jinja2.environment import Environment
+ from jinja2.exceptions import SecurityError
+ from jinja2._compat import string_types, PY2
+@@ -55,7 +60,10 @@ import warnings
+ warnings.filterwarnings('ignore', 'the sets module', DeprecationWarning,
+                         module='jinja2.sandbox')
+ 
+-from collections import deque
++try:
++    from collections.abc import deque
++except ImportError:
++    from collections import deque
+ 
+ _mutable_set_types = (set,)
+ _mutable_mapping_types = (dict,)
+@@ -79,7 +87,11 @@ except ImportError:
+     pass
+ 
+ #: register Python 2.6 abstract base classes
+-from collections import MutableSet, MutableMapping, MutableSequence
++try:
++    from collections.abc import MutableSet, MutableMapping, MutableSequence
++except:
++    from collections import MutableSet, MutableMapping, MutableSequence
++
+ _mutable_set_types += (MutableSet,)
+ _mutable_mapping_types += (MutableMapping,)
+ _mutable_sequence_types += (MutableSequence,)
+--- jinja2-2.10.1.orig/jinja2/tests.py
++++ jinja2-2.10.1/jinja2/tests.py
+@@ -10,7 +10,12 @@
+ """
+ import operator
+ import re
+-from collections import Mapping
++
++try:
++    from collections.abc import Mapping
++except:
++    from collections import Mapping
++
+ from jinja2.runtime import Undefined
+ from jinja2._compat import text_type, string_types, integer_types
+ import decimal
+--- jinja2-2.10.1.orig/jinja2/utils.py
++++ jinja2-2.10.1/jinja2/utils.py
+@@ -11,7 +11,12 @@
+ import re
+ import json
+ import errno
+-from collections import deque
++
++try:
++    from collections.abc import deque
++except:
++    from collections import deque
++
+ from threading import Lock
+ from jinja2._compat import text_type, string_types, implements_iterator, \
+      url_quote
+@@ -482,10 +487,14 @@ class LRUCache(object):
+ 
+ # register the LRU cache as mutable mapping if possible
+ try:
+-    from collections import MutableMapping
++    from collections.abc import MutableMapping
+     MutableMapping.register(LRUCache)
+ except ImportError:
+-    pass
++    try:
++        from collections import MutableMapping
++        MutableMapping.register(LRUCache)
++    except ImportError:
++        pass
+ 
+ 
+ def select_autoescape(enabled_extensions=('html', 'htm', 'xml'),
