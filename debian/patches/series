@@ -1,1 +1,3 @@
 py3.9-fix-collections-import.patch
+CVE-2024-22195.patch
+CVE-2020-28493.patch
