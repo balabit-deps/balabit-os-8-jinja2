@@ -1,3 +1,12 @@
+jinja2 (2.10.1-2ubuntu0.3) focal-security; urgency=medium
+
+  * SECURITY UPDATE: Cross-Site scripting in xmlattr filter
+    - debian/patches/CVE-2024-34064.patch: disallow invalid characters 
+      in keys to xmlattr filter
+    - CVE-2024-34064
+
+ -- Nick Galanis <nick.galanis@canonical.com>  Tue, 21 May 2024 09:35:36 +0100
+
 jinja2 (2.10.1-2ubuntu0.2) focal-security; urgency=medium
 
   * SECURITY UPDATE: regular expression DoS
