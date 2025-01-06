@@ -1,3 +1,15 @@
+jinja2 (2.10.1-2ubuntu0.4) focal-security; urgency=medium
+
+  * SECURITY UPDATE: arbitrary code execution issue in jinja compiler
+    - debian/patches/CVE-2024-56201.patch: f-string syntax handling in code
+      generation improved in jinja2/compiler.py.
+    - debian/patches/CVE-2024-56326.patch: oversight on calls to str.format
+      adjusted in jinja2/sandbox.py.
+    - CVE-2024-56201
+    - CVE-2024-56326
+
+ -- Evan Caville <evan.caville@canonical.com>  Mon, 06 Jan 2025 15:47:03 +1000
+
 jinja2 (2.10.1-2ubuntu0.3) focal-security; urgency=medium
 
   * SECURITY UPDATE: Cross-Site scripting in xmlattr filter
