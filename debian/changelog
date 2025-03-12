@@ -1,3 +1,20 @@
+jinja2 (2.10.1-2ubuntu0.6) focal-security; urgency=medium
+
+  * SECURITY REGRESSION: Arbitrary code execution via |attr filter bypass
+    - debian/patches/CVE-2025-27516.patch: Replace getattr_static with an
+      equivalent Python 2 compatible function
+    - CVE-2025-27516
+
+ -- John Breton <john.breton@canonical.com>  Wed, 12 Mar 2025 12:53:04 -0400
+
+jinja2 (2.10.1-2ubuntu0.5) focal-security; urgency=medium
+
+  * SECURITY UPDATE: Arbitrary code execution via |attr filter bypass
+    - debian/patches/CVE-2025-27516.patch: attr filter uses env.getattr
+    - CVE-2025-27516
+
+ -- John Breton <john.breton@canonical.com>  Mon, 10 Mar 2025 12:58:01 -0400
+
 jinja2 (2.10.1-2ubuntu0.4) focal-security; urgency=medium
 
   * SECURITY UPDATE: arbitrary code execution issue in jinja compiler
